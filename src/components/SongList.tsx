@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react"
+import React, { FC } from "react"
 import { connect, ConnectedProps } from "react-redux"
 
 import List from "@material-ui/core/List"
@@ -14,26 +14,23 @@ import { selectSong } from "../actions"
 
 interface RootState {
   songs: Song[]
+  selectedSong: Song
 }
 
-const mapState = (state: RootState): { songs: Song[] } => {
-  return { songs: state.songs }
+const mapState = (state: RootState): RootState => {
+  return { songs: state.songs, selectedSong: state.selectedSong }
 }
 
 const connector = connect(mapState, { selectSong })
 type SongListProps = ConnectedProps<typeof connector>
 
-const SongList: FC<SongListProps> = ({ songs, selectSong }) => {
-  const [selected] = useState<Song>(songs[0])
-
+const SongList: FC<SongListProps> = ({ songs, selectSong, selectedSong }) => {
   const renderList = () => {
     return songs.map((song) => {
       return (
         <ListItem
           id={`switch-${song.title}`}
           key={song.title}
-          button
-          component="a"
           alignItems="center"
         >
           <ListItemIcon>
@@ -44,7 +41,7 @@ const SongList: FC<SongListProps> = ({ songs, selectSong }) => {
             <Switch
               edge="end"
               onChange={() => selectSong(song)}
-              checked={selected.title === song.title}
+              checked={selectedSong?.title === song.title ?? false}
               inputProps={{ "aria-labelledby": `switch-${song.title}` }}
             />
           </ListItemSecondaryAction>
